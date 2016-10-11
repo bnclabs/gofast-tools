@@ -1,2 +1,4 @@
 *.swp
 *.swo
+./perf/perf
+./verify/verify
