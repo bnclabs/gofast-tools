@@ -1,0 +1,357 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <script type="text/javascript" src="jquery-2.2.3.min.js"></script>
+        <script type="text/javascript"
+                src="jquery-ui-1.11.4.custom/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="canvasjs.min.js"></script>
+        <script type="text/javascript">
+            $(function () {
+                var tickInterval = 1000; // ms
+                var datalength = 50;
+                var tstaturl = "http://localhost:8080/gofast/statistics";
+                var mstaturl = "http://localhost:8080/gofast/memstats";
+
+                var makelegend = function(chart) {
+                    legend = {
+                        verticalAlign: "bottom", horizontalAlign: "right",
+                        fontSize: 14, fontWeight: "bold", fontFamily: "calibri",
+                        fontColor: "dimGrey", cursor:"pointer",
+                        itemclick : function(e) {
+                            if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+                                e.dataSeries.visible = false;
+                            } else {
+                                e.dataSeries.visible = true;
+                            }
+                            chart.render();
+                        }
+                    }
+                    return legend
+                };
+
+                var makespline = function(name, color, datapoints) {
+                    dataseries = {
+                        type: "line", name: name, color: color, showInLegend: true,
+                        dataPoints: datapoints
+                    }
+                    return dataseries
+                };
+
+                //--- transport graphs
+
+                var dataHeatbeats = [];
+                var dataFlushes = [];
+                var chartPulses = new CanvasJS.Chart("pulses",{
+                    title: {text: "beats & flushes"},
+                    toolTip: {shared: true},
+                    axisY:{includeZero: false},
+                    data: [
+                        makespline("beats", "red", dataHeatbeats),
+                        makespline("flushes", "blue", dataFlushes)]
+                });
+                chartPulses.legend = makelegend(chartPulses);
+
+                var dataTx = [];
+                var dataRx = [];
+                var chartMessages = new CanvasJS.Chart("messages",{
+                    title: {text: "messages"},
+                    toolTip: {shared: true},
+                    axisY:{includeZero: false},
+                    data: [
+                        makespline("tx", "crimson", dataTx),
+                        makespline("rx", "green", dataRx)]
+                });
+                chartMessages.legend = makelegend(chartMessages);
+
+                var dataTxbytes = [];
+                var dataRxbytes = [];
+                var chartBytes = new CanvasJS.Chart("bytes",{
+                    title: {text: "bytes"},
+                    toolTip: {shared: true},
+                    axisY:{includeZero: false},
+                    data: [
+                        makespline("tx", "crimson", dataTxbytes),
+                        makespline("rx", "green", dataRxbytes)]
+                });
+                chartBytes.legend = makelegend(chartBytes);
+
+                var dataTxreq = [];
+                var dataRxresp = [];
+                var dataTxresp = [];
+                var dataRxreq = [];
+                var chartRequests = new CanvasJS.Chart("requests",{
+                    title: {text: "requests"},
+                    toolTip: {shared: true},
+                    axisY:{includeZero: false},
+                    data: [
+                        makespline("txreq", "crimson", dataTxreq),
+                        makespline("rxresp", "green", dataRxresp),
+                        makespline("txresp", "DarkSalmon", dataTxresp),
+                        makespline("rxreq", "DarkSeaGreen", dataRxreq)]
+                });
+                chartRequests.legend = makelegend(chartRequests);
+
+                var dataTxpost = [];
+                var dataRxpost = [];
+                var chartPosts = new CanvasJS.Chart("posts",{
+                    title: {text: "posts"},
+                    toolTip: {shared: true},
+                    axisY:{includeZero: false},
+                    data: [
+                        makespline("tx", "crimson", dataTxpost),
+                        makespline("rx", "green", dataRxpost)]
+                });
+                chartPosts.legend = makelegend(chartPosts);
+
+                var dataTxstream = [];
+                var dataRxstream = [];
+                var chartStream = new CanvasJS.Chart("streams",{
+                    title: {text: "streams"},
+                    toolTip: {shared: true},
+                    axisY:{includeZero: false},
+                    data: [
+                        makespline("tx", "crimson", dataTxstream),
+                        makespline("rx", "green", dataRxstream)]
+                });
+                chartStream.legend = makelegend(chartStream);
+
+                var dataTxstart = [];
+                var dataRxstart = [];
+                var dataTxfin = [];
+                var dataRxfin = [];
+                var chartRStream = new CanvasJS.Chart("rstreams",{
+                    title: {text: "rstreams"},
+                    toolTip: {shared: true},
+                    axisY:{includeZero: false},
+                    data: [
+                        makespline("txstart", "green", dataTxstart),
+                        makespline("rxstart", "DarkSeaGreen", dataRxstart),
+                        makespline("txfin", "crimson", dataTxfin),
+                        makespline("rxfin", "DarkSalmon", dataRxfin)]
+                });
+                chartRStream.legend = makelegend(chartRStream);
+
+                // memory statistics
+
+                var dataMallocs = [];
+                var dataFrees = [];
+                var chartAllocs = new CanvasJS.Chart("allocs",{
+                    title: {text: "allocs"},
+                    toolTip: {shared: true},
+                    axisY:{includeZero: false},
+                    data: [
+                        makespline("txstart", "crimson", dataMallocs),
+                        makespline("rxstart", "green", dataFrees)]
+                });
+                chartAllocs.legend = makelegend(chartAllocs);
+
+                var dataPausens = [];
+                var chartPausens = new CanvasJS.Chart("pausens",{
+                    title: {text: "GC-Pause-times"},
+                    toolTip: {shared: true},
+                    axisY:{includeZero: false},
+                    data: [makespline("pausens", "blue", dataPausens)]
+                });
+                chartPausens.legend = makelegend(chartPausens);
+
+                var dataHeapsys = [];
+                var dataHeapalloc = [];
+                var dataHeapidle = [];
+                var dataHeapinuse = [];
+                var dataHeapreleased = [];
+                var chartMemory = new CanvasJS.Chart("memory",{
+                    title: {text: "memory graph"},
+                    toolTip: {shared: true},
+                    axisY:{includeZero: false},
+                    data: [
+                        makespline("heapsys", "blue", dataHeapsys),
+                        makespline("heapalloc", "crimson", dataHeapalloc),
+                        makespline("heapinuse", "violet", dataHeapinuse),
+                        makespline("heapidle", "brown", dataHeapidle),
+                        makespline("heapreleased", "green", dataHeapreleased)]
+                });
+                chartMemory.legend = makelegend(chartMemory);
+
+                //----
+
+                var pushshiftrender = function(chart, datapoints, x, y) {
+                    datapoints.push({x: x, y: y});
+                    if (datapoints.length > datalength) {
+                        datapoints.shift();
+                    }
+                    chart.render();
+                };
+
+                // draggable
+                $("#pulses").draggable();
+                $("#messages").draggable();
+                $("#bytes").draggable();
+                $("#requests").draggable();
+                $("#posts").draggable();
+                $("#streams").draggable();
+                $("#rstreams").draggable();
+                $("#allocs").draggable();
+                $("#pausens").draggable();
+                $("#memory").draggable();
+
+                var tick = 0;
+                stats = {
+                    // transport statistics
+                    "n_rxbeats": 0,
+                    "n_flushes": 0,
+                    "n_tx": 0,
+                    "n_rx": 0,
+                    "n_txbyte": 0,
+                    "n_rxbyte": 0,
+                    "n_txreq": 0,
+                    "n_rxresp": 0,
+                    "n_txresp": 0,
+                    "n_rxreq": 0,
+                    "n_txpost": 0,
+                    "n_rxpost": 0,
+                    "n_txstream": 0,
+                    "n_rxstream": 0,
+                    "n_txstart": 0,
+                    "n_rxstart": 0,
+                    "n_txfin": 0,
+                    "n_rxfin": 0,
+                }
+
+                var updatestats = function() {
+                    tick += 1
+                    $.getJSON(tstaturl, function(rstats) {
+                        if (tick == 1) {
+                            $.each(rstats, function(key, value) {
+                                stats[key] = rstats[key]
+                            })
+                            return
+                        }
+
+                        var updatestat = function(chart, data, key) {
+                            y = 0;
+                            if (key in rstats) {
+                                if (rstats[key] > stats[key]) {
+                                    y = rstats[key] - stats[key]
+                                }
+                            }
+                            pushshiftrender(chart, data, tick, y);
+                            stats[key] = 0
+                            if (key in rstats) {
+                                stats[key] = rstats[key];
+                            }
+                        };
+
+                        // update heartbeats
+                        updatestat(chartPulses, dataHeatbeats, "n_rxbeats");
+                        chartPulses.options.data[0].legendText = "total: " + rstats["n_rxbeats"];
+                        updatestat(chartPulses, dataFlushes, "n_flushes");
+                        chartPulses.options.data[1].legendText = "total: " + rstats["n_flushes"];
+
+                        // update messages
+                        updatestat(chartMessages, dataTx, "n_tx");
+                        chartMessages.options.data[0].legendText = "tx total: " + rstats["n_tx"];
+                        updatestat(chartMessages, dataRx, "n_rx");
+			            chartMessages.options.data[1].legendText = "rx total: " + rstats["n_rx"];
+
+                        // update bytes
+                        updatestat(chartBytes, dataTxbytes, "n_txbyte");
+                        chartBytes.options.data[0].legendText = "tx total: " + rstats["n_txbyte"];
+                        updatestat(chartBytes, dataRxbytes, "n_rxbyte");
+			            chartBytes.options.data[1].legendText = "rx total: " + rstats["n_rxbyte"];
+
+                        // update requests
+                        updatestat(chartRequests, dataTxreq, "n_txreq");
+                        chartRequests.options.data[0].legendText = "tx req: " + rstats["n_txreq"];
+                        updatestat(chartRequests, dataRxresp, "n_rxresp");
+			            chartRequests.options.data[1].legendText = "rx resp: " + rstats["n_rxresp"];
+                        updatestat(chartRequests, dataTxresp, "n_txresp");
+                        chartRequests.options.data[2].legendText = "tx resp: " + rstats["n_txresp"];
+                        updatestat(chartRequests, dataRxreq, "n_rxreq");
+			            chartRequests.options.data[3].legendText = "rx req: " + rstats["n_rxreq"];
+
+                        // update posts
+                        updatestat(chartPosts, dataTxpost, "n_txpost");
+                        chartPosts.options.data[0].legendText = "tx total: " + rstats["n_txpost"];
+                        updatestat(chartPosts, dataRxpost, "n_rxpost");
+			            chartPosts.options.data[1].legendText = "rx total: " + rstats["n_rxpost"];
+
+                        // update stream
+                        updatestat(chartStream, dataTxstream, "n_txstream");
+                        chartStream.options.data[0].legendText = "tx total: " + rstats["n_txstream"];
+                        updatestat(chartStream, dataRxstream, "n_rxstream");
+			            chartStream.options.data[1].legendText = "rx total: " + rstats["n_rxstream"];
+
+                        // update request streams
+                        updatestat(chartRStream, dataTxstart, "n_txstart");
+                        chartRStream.options.data[0].legendText = "tx starts: " + rstats["n_txstart"];
+                        updatestat(chartRStream, dataRxstart, "n_rxstart");
+			            chartRStream.options.data[1].legendText = "rx starts: " + rstats["n_rxstart"];
+                        updatestat(chartRStream, dataTxfin, "n_txfin");
+                        chartRStream.options.data[2].legendText = "tx fins: " + rstats["n_txfin"];
+                        updatestat(chartRStream, dataRxfin, "n_rxfin");
+			            chartRStream.options.data[3].legendText = "rx fins: " + rstats["n_rxfin"];
+                    })
+
+                    $.getJSON(mstaturl, function(rstats) {
+                        if (tick == 1) {
+                            $.each(rstats, function(key, value) {
+                                stats[key] = rstats[key]
+                            })
+                            return
+                        }
+
+                        // memory statistics
+                        // update allocs
+                        pushshiftrender(chartAllocs, dataMallocs, tick, rstats["mallocs"]);
+                        pushshiftrender(chartAllocs, dataFrees, tick, rstats["frees"]);
+
+                        // update memory
+                        pushshiftrender(chartMemory, dataHeapsys, tick, rstats["heapsys"]);
+                        pushshiftrender(chartMemory, dataHeapalloc, tick, rstats["heapalloc"]);
+                        pushshiftrender(chartMemory, dataHeapidle, tick, rstats["heapidle"]);
+                        pushshiftrender(chartMemory, dataHeapinuse, tick, rstats["heapinuse"]);
+                        pushshiftrender(chartMemory, dataHeapreleased, tick, rstats["heapreleased"]);
+
+                        // update gc
+                        $.each(rstats["pausens"], function(key, value) {
+                            pushshiftrender(chartPausens, dataPausens, tick, value);
+                        })
+			            chartBytes.options.data[1].legendText =
+                            "num:" + rstats["numgc"] + " "
+                            + "total:" + rstats["pausetotalns"] + " "
+                            + "gcsys:" + rstats["gcsys"]
+                    })
+                };
+
+                // update chart after specified interval
+                setInterval(updatestats, tickInterval)
+            })
+        </script>
+        <style>
+        .charts {
+            height: 300px;
+            margin: 20px 10px;
+            width: 400px;
+            float: left;
+            position: relative;
+        }
+        .canvasjs-chart-credit {
+            display: none;
+        }
+
+        </style>
+    </head>
+    <body>
+        <div class="charts" id="pulses"></div>
+        <div class="charts" id="messages"></div>
+        <div class="charts" id="bytes"></div>
+        <div class="charts" id="requests" style="width: 800px;"></div>
+        <div class="charts" id="posts"></div>
+        <div class="charts" id="streams"></div>
+        <div class="charts" id="rstreams" style="width: 800px;"></div>
+        <div class="charts" id="allocs" style="width: 1000px;"></div>
+        <div class="charts" id="pausens" style="width: 1000px;"></div>
+        <div class="charts" id="memory" style="width: 1000px;"></div>
+    </body>
+</html>
+
