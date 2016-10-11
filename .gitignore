@@ -1,4 +1,8 @@
 *.swp
 *.swo
-./perf/perf
-./verify/verify
+perf/perf
+perf/*.pprof
+perf/*.mprof
+verify/verify
+verify/*.pprof
+verify/*.mprof
