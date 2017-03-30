@@ -8,7 +8,8 @@ import "runtime"
 import "net/http"
 import _ "net/http/pprof"
 
-import "github.com/prataprc/gofast"
+import golog "github.com/prataprc/golog"
+import s "github.com/prataprc/gosettings"
 
 var options struct {
 	// general options.
@@ -82,7 +83,7 @@ func main() {
 	argParse()
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	gofast.SetLogger(nil, gofast.Settings{"log.level": "warn", "log.file": ""})
+	golog.SetLogger(nil, s.Settings{"log.level": "warn", "log.file": ""})
 
 	if options.server {
 		go func() {
