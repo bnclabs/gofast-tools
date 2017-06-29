@@ -11,7 +11,7 @@ import "runtime/pprof"
 import "net/http"
 import _ "net/http/pprof"
 
-import "github.com/fatih/color"
+import "github.com/prataprc/color"
 import golog "github.com/prataprc/golog"
 import s "github.com/prataprc/gosettings"
 
