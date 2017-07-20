@@ -78,8 +78,8 @@ const ( // pre-defined tag values
 	tagLzw
 
 	// opaque-space 256..55798
-	tagOpaqueStart = iota + 235
-	tagOpaqueEnd   = iota + 55776
+	tagOpaqueStart = iota + 246
+	tagOpaqueEnd   = iota + 15309714
 
 	tagCborPrefix
 

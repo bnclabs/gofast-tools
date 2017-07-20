@@ -92,7 +92,9 @@ func client(routines int) (cstat, sstat map[string]uint64) {
 				})
 			trans.SubscribeMessage(&msgDone{}, nil)
 			trans.SubscribeMessage(&msgStat{}, nil)
-			trans.Handshake()
+			if err := trans.Handshake(); err != nil {
+				panic(err)
+			}
 
 			n_trans = append(n_trans, trans)
 

@@ -138,7 +138,9 @@ func server(routines int) {
 					}
 					return nil
 				})
-			trans.Handshake()
+			if err := trans.Handshake(); err != nil {
+				panic(err)
+			}
 
 			func() {
 				mu.Lock()
