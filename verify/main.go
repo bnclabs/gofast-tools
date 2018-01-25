@@ -12,8 +12,8 @@ import "net/http"
 import _ "net/http/pprof"
 
 import "github.com/prataprc/color"
-import golog "github.com/prataprc/golog"
-import s "github.com/prataprc/gosettings"
+import golog "github.com/bnclabs/golog"
+import s "github.com/bnclabs/gosettings"
 
 var _ = fmt.Sprintf("dummy")
 
