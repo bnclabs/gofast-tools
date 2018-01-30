@@ -196,7 +196,7 @@ func (msg *msgStat) ID() uint64 {
 func (msg *msgStat) Encode(out []byte) []byte {
 	out = fixbuffer(out, msg.Size())
 	config := gson.NewDefaultConfig().SetNumberKind(gson.SmartNumber)
-	cbr := config.NewCbor(out, 0)
+	cbr := config.NewCbor(out[:0])
 	data := make(map[string]interface{})
 	for k, v := range msg.data {
 		data[k] = v
@@ -207,7 +207,7 @@ func (msg *msgStat) Encode(out []byte) []byte {
 
 func (msg *msgStat) Decode(in []byte) (n int64) {
 	config := gson.NewDefaultConfig().SetNumberKind(gson.SmartNumber)
-	cbr := config.NewCbor(in, len(in))
+	cbr := config.NewCbor(in)
 	msg.data = make(map[string]uint64)
 	for k, v := range cbr.Tovalue().(map[string]interface{}) {
 		msg.data[k] = v.(uint64)
