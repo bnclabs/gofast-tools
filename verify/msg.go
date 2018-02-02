@@ -4,7 +4,7 @@ import "fmt"
 import "encoding/binary"
 
 import "github.com/prataprc/gofast"
-import "github.com/prataprc/gson"
+import "github.com/bnclabs/gson"
 
 //-- post message for benchmarking
 
