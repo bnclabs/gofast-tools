@@ -1,3 +1,5 @@
 check:
 	$(MAKE) -C verify check;
-	$(MAKE) -C collate_validate check;
+
+travis:
+	$(MAKE) -C verify travis;
