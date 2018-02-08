@@ -6,7 +6,7 @@ import "sort"
 import "strings"
 import "unsafe"
 
-import "github.com/prataprc/gofast"
+import "github.com/bnclabs/gofast"
 
 func bytes2str(bytes []byte) string {
 	if bytes == nil {

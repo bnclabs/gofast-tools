@@ -7,7 +7,7 @@ import "net"
 import "fmt"
 import "math/rand"
 
-import gf "github.com/prataprc/gofast"
+import gf "github.com/bnclabs/gofast"
 
 func client(routines int) (cstat, sstat map[string]uint64) {
 	var wg sync.WaitGroup

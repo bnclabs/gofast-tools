@@ -3,7 +3,7 @@ package main
 import "fmt"
 import "encoding/binary"
 
-import "github.com/prataprc/gofast"
+import "github.com/bnclabs/gofast"
 import "github.com/bnclabs/gson"
 
 //-- post message for benchmarking
