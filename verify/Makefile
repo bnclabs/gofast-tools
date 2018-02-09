@@ -2,7 +2,7 @@ check:
 	run.sh
 
 travis:
-	travis.sh
+	./travis.sh
 
 clean:
 	rm -rf *.svg *.pprof *.mprof verify
