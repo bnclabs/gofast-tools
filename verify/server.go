@@ -11,7 +11,7 @@ import gf "github.com/bnclabs/gofast"
 import _ "github.com/bnclabs/gofast/http"
 
 var mu sync.Mutex
-var n_trans = make([]*gf.Transport, 0, 100)
+var nTrans = make([]*gf.Transport, 0, 100)
 
 func cleantrans() {
 	tick := time.NewTicker(1 * time.Second)
@@ -22,12 +22,12 @@ func cleantrans() {
 			defer mu.Unlock()
 
 			newtrans := make([]*gf.Transport, 0, 100)
-			for _, trans := range n_trans {
+			for _, trans := range nTrans {
 				if trans.IsClosed() == false {
 					newtrans = append(newtrans, trans)
 				}
 			}
-			n_trans = newtrans
+			nTrans = newtrans
 		}()
 	}
 }
@@ -145,7 +145,7 @@ func server(routines int) {
 			func() {
 				mu.Lock()
 				defer mu.Unlock()
-				n_trans = append(n_trans, trans)
+				nTrans = append(nTrans, trans)
 			}()
 
 			doers := make([]chan int, 0, 100)

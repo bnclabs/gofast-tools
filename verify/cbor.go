@@ -86,7 +86,7 @@ const ( // pre-defined tag values
 	// unassigned 55800..
 )
 
-var brkstp byte = cborHdr(cborType7, cborItemBreak)
+var brkstp = cborHdr(cborType7, cborItemBreak)
 
 func cborMajor(b byte) byte {
 	return b & 0xe0

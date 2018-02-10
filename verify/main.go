@@ -76,7 +76,7 @@ func main() {
 		fmt.Printf("repeat %v\n", i)
 		cstat, sstat := client(options.routines)
 		if rv := verify(cstat, sstat); rv > 0 {
-			Error("Failed ...")
+			mkerror("Failed ...")
 			os.Exit(1)
 		}
 	}
@@ -93,75 +93,75 @@ func main() {
 
 func verify(cstat, sstat map[string]uint64) (rv int) {
 	if x, y := cstat["n_rx"], sstat["n_tx"]; x != y {
-		Error("mismatch client.n_rx server.n_tx %v,%v", x, y)
+		mkerror("mismatch client.n_rx server.n_tx %v,%v", x, y)
 		rv++
 	}
 	if x, y := cstat["n_tx"], sstat["n_rx"]; x != y {
-		Error("mismatch client.n_tx, server.n_rx %v,%v", x, y)
+		mkerror("mismatch client.n_tx, server.n_rx %v,%v", x, y)
 		rv++
 	}
 	if x, y := cstat["n_rxbyte"], sstat["n_txbyte"]; x != y {
-		Error("mismatch client.n_rxbyte, server.n_txbyte %v,%v", x, y)
+		mkerror("mismatch client.n_rxbyte, server.n_txbyte %v,%v", x, y)
 		rv++
 	}
 	if x, y := cstat["n_txbyte"], sstat["n_rxbyte"]; x != y {
-		Error("mismatch client.n_txbyte, server.n_rxbyte %v,%v", x, y)
+		mkerror("mismatch client.n_txbyte, server.n_rxbyte %v,%v", x, y)
 		rv++
 	}
 	if x, y := cstat["n_rxfin"], sstat["n_txfin"]; x != y {
-		Error("mismatch client.n_rxfin, server.n_txfin %v,%v", x, y)
+		mkerror("mismatch client.n_rxfin, server.n_txfin %v,%v", x, y)
 		rv++
 	}
 	if x, y := cstat["n_txfin"], sstat["n_rxfin"]; x != y {
-		Error("mismatch client.n_txfin, server.n_rxfin %v,%v", x, y)
+		mkerror("mismatch client.n_txfin, server.n_rxfin %v,%v", x, y)
 		rv++
 	}
 	x, y := cstat["n_rxpost"], sstat["n_txpost"]
 	if diff := math.Abs(float64(x - y)); diff == 1 {
 		fmt.Println("skipped a post, most likely heartbeat")
 	} else if diff > 1 {
-		Error("mismatch client.n_rxpost, server.n_txpost %v,%v", x, y)
+		mkerror("mismatch client.n_rxpost, server.n_txpost %v,%v", x, y)
 		rv++
 	}
 	if x, y := cstat["n_txpost"], sstat["n_rxpost"]; x != y {
-		Error("mismatch client.n_txpost, server.n_rxpost %v,%v", x, y)
+		mkerror("mismatch client.n_txpost, server.n_rxpost %v,%v", x, y)
 		rv++
 	}
 	if x, y := cstat["n_rxreq"], sstat["n_txreq"]; x != y {
-		Error("mismatch client.n_rxreq, server.n_txreq %v,%v", x, y)
+		mkerror("mismatch client.n_rxreq, server.n_txreq %v,%v", x, y)
 		rv++
 	}
 	if x, y := cstat["n_txreq"], sstat["n_rxreq"]; x != y {
-		Error("mismatch client.n_txreq, server.n_rxreq %v,%v", x, y)
+		mkerror("mismatch client.n_txreq, server.n_rxreq %v,%v", x, y)
 		rv++
 	}
 	if x, y := cstat["n_rxresp"], sstat["n_txresp"]; x != y {
-		Error("mismatch client.n_rxresp, server.n_txresp %v,%v", x, y)
+		mkerror("mismatch client.n_rxresp, server.n_txresp %v,%v", x, y)
 		rv++
 	}
 	if x, y := cstat["n_txresp"], sstat["n_rxresp"]; x != y {
-		Error("mismatch client.n_txresp, server.n_rxresp %v,%v", x, y)
+		mkerror("mismatch client.n_txresp, server.n_rxresp %v,%v", x, y)
 		rv++
 	}
 	if x, y := cstat["n_rxstart"], sstat["n_txstart"]; x != y {
-		Error("mismatch client.n_rxstart, server.n_txstart %v,%v", x, y)
+		mkerror("mismatch client.n_rxstart, server.n_txstart %v,%v", x, y)
 		rv++
 	}
 	if x, y := cstat["n_txstart"], sstat["n_rxstart"]; x != y {
-		Error("mismatch client.n_txstart, server.n_rxstart %v,%v", x, y)
+		mkerror("mismatch client.n_txstart, server.n_rxstart %v,%v", x, y)
 		rv++
 	}
 	if x, y := cstat["n_rxstream"], sstat["n_txstream"]; x != y {
-		Error("mismatch client.n_rxstream, server.n_txstream %v,%v", x, y)
+		mkerror("mismatch client.n_rxstream, server.n_txstream %v,%v", x, y)
 		rv++
 	}
 	if x, y := cstat["n_txstream"], sstat["n_rxstream"]; x != y {
-		Error("mismatch client.n_txstream, server.n_rxstream %v,%v", x, y)
+		mkerror("mismatch client.n_txstream, server.n_rxstream %v,%v", x, y)
 		rv++
 	}
 	return
 }
 
-func Error(format string, args ...interface{}) {
+func mkerror(format string, args ...interface{}) {
 	color.Red(fmt.Sprintf("Error "+format, args...))
 }

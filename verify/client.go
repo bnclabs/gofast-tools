@@ -16,7 +16,7 @@ func client(routines int) (cstat, sstat map[string]uint64) {
 	now := time.Now()
 
 	ver := testVersion(1)
-	n_trans := make([]*gf.Transport, 0, options.conns)
+	nTrans := make([]*gf.Transport, 0, options.conns)
 	cmds := []int{sendpost, sendreq, sendstream}
 
 	payload := rand.Intn(options.buffersize)
@@ -96,7 +96,7 @@ func client(routines int) (cstat, sstat map[string]uint64) {
 				panic(err)
 			}
 
-			n_trans = append(n_trans, trans)
+			nTrans = append(nTrans, trans)
 
 			doers := make([]chan int, 0, 100)
 			for j := 0; j < routines; j++ {
@@ -120,13 +120,13 @@ func client(routines int) (cstat, sstat map[string]uint64) {
 	wg.Wait()
 
 	// handshake for end
-	for _, trans := range n_trans {
+	for _, trans := range nTrans {
 		trans.Request(msgdone, true, nil)
 	}
 
 	// get server stats
 	sstat = make(map[string]uint64)
-	for _, trans := range n_trans {
+	for _, trans := range nTrans {
 		var rmsg msgStat
 
 		y0 := trans.Stat()["n_rxbyte"]
@@ -137,11 +137,11 @@ func client(routines int) (cstat, sstat map[string]uint64) {
 		y1 := trans.Stat()["n_rxbyte"]
 
 		stat := rmsg.data
-		stat["n_tx"] += 1
-		stat["n_rx"] += 1
+		stat["n_tx"]++
+		stat["n_rx"]++
 		stat["n_txbyte"] += y1 - y0
-		stat["n_rxreq"] += 1
-		stat["n_txresp"] += 1
+		stat["n_rxreq"]++
+		stat["n_txresp"]++
 		for k, v := range stat {
 			if val, ok := sstat[k]; ok {
 				sstat[k] = val + v
@@ -153,7 +153,7 @@ func client(routines int) (cstat, sstat map[string]uint64) {
 
 	// get client stats
 	cstat = make(map[string]uint64)
-	for _, trans := range n_trans {
+	for _, trans := range nTrans {
 		for k, v := range trans.Stat() {
 			if val, ok := cstat[k]; ok {
 				cstat[k] = val + v
@@ -163,7 +163,7 @@ func client(routines int) (cstat, sstat map[string]uint64) {
 		}
 	}
 
-	for _, trans := range n_trans {
+	for _, trans := range nTrans {
 		trans.Close()
 	}
 

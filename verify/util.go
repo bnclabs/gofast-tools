@@ -43,10 +43,10 @@ func printCounts(counts map[string]uint64) {
 	fmt.Println("stats {", strings.Join(s, ", "), "}")
 }
 
-func addCounts(n_trans ...*gofast.Transport) map[string]uint64 {
-	if len(n_trans) > 0 {
-		counts := n_trans[0].Stat()
-		for _, trans := range n_trans[1:] {
+func addCounts(nTrans ...*gofast.Transport) map[string]uint64 {
+	if len(nTrans) > 0 {
+		counts := nTrans[0].Stat()
+		for _, trans := range nTrans[1:] {
 			for k, v := range trans.Stat() {
 				counts[k] += v
 			}
