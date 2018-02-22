@@ -13,6 +13,7 @@ import _ "net/http/pprof"
 
 import "github.com/prataprc/color"
 import golog "github.com/bnclabs/golog"
+import "github.com/bnclabs/gofast"
 import s "github.com/bnclabs/gosettings"
 
 var _ = fmt.Sprintf("dummy")
@@ -52,6 +53,7 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	golog.SetLogger(nil, s.Settings{"log.level": "warn", "log.file": ""})
+	gofast.LogComponents("all")
 
 	// start cpu profile, always enabled.
 	fname := "verify.pprof"
